@@ -8,7 +8,7 @@ import {
   Button,
   Alert,
 } from '@mui/material';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabase';
 
 interface UserProfile {
   first_name: string;
