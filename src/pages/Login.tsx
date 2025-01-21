@@ -10,13 +10,15 @@ import {
   Alert,
 } from '@mui/material';
 import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabase';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { signIn } = useAuthStore();
+  const { signIn, user} = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
