@@ -21,7 +21,7 @@ export default function Home() {
         throw error;
       }
       
-      navigate('/Login'); // Navigate to login page on successful signup
+      navigate('/login'); // Navigate to login page on successful signup
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
@@ -43,7 +43,7 @@ export default function Home() {
         throw error;
       }
 
-      navigate('/Dashboard'); // Navigate to dashboard page on successful login
+      navigate('/dashboard'); // Navigate to dashboard page on successful login
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
