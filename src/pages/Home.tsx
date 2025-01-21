@@ -1,14 +1,57 @@
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  Paper,
-} from '@mui/material';
+import { Container, Box, Typography, Button, Paper, TextField } from '@mui/material';
+import { supabase } from '../lib/supabase'; // Make sure this import path is correct
 
 export default function Home() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  // Sign Up function
+  const handleSignUp = async () => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+      
+      navigate('/Login'); // Navigate to login page on successful signup
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred.');
+      }
+    }
+  };
+
+  // Sign In function
+  const handleSignIn = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      navigate('/Dashboard'); // Navigate to dashboard page on successful login
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred.');
+      }
+    }
+  };
 
   return (
     <Container component="main" maxWidth="md">
@@ -46,11 +89,30 @@ export default function Home() {
           </Typography>
 
           <Box sx={{ width: '100%', gap: 2, display: 'flex', flexDirection: 'column' }}>
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              variant="outlined"
+              fullWidth
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {error && <Typography color="error">{error}</Typography>}
+
             <Button
               fullWidth
               variant="contained"
               size="large"
-              onClick={() => navigate(‘/Register')}
+              onClick={handleSignUp}
               sx={{
                 py: 1.5,
                 fontSize: '1.1rem',
@@ -63,7 +125,7 @@ export default function Home() {
               fullWidth
               variant="outlined"
               size="large"
-              onClick={() => navigate(‘/Login')}
+              onClick={handleSignIn}
               sx={{
                 py: 1.5,
                 fontSize: '1.1rem',
