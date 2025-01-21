@@ -32,7 +32,7 @@ export default function Login() {
 
       if (profileError || !profileData) {
         // No profile exists, redirect to form
-        navigate('/user-details');
+        navigate('/form');
       } else {
         // Profile exists, go to dashboard
         navigate('/dashboard');
