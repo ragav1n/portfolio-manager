@@ -1,14 +1,16 @@
 {
   "name": "portfolio-management",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
+  "main": "server.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "NODE_ENV=production node server.js",
+    "test": "echo \"Add your test script here!\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -16,7 +18,9 @@
     "@mui/material": "^5.15.10",
     "@mui/x-charts": "^6.19.4",
     "@mui/x-data-grid": "^6.19.4",
-    "@supabase/supabase-js": "^2.39.7",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.48.0",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "date-fns": "^3.3.1",
@@ -28,6 +32,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.50.1",
     "react-router-dom": "^6.22.1",
+    "yahoo-finance2": "^2.13.3",
     "zustand": "^4.5.1"
   },
   "devDependencies": {
@@ -46,9 +51,15 @@
     "typescript-eslint": "^8.3.0",
     "vite": "^5.4.2"
   },
-  "main": "eslint.config.js",
-  "keywords": [],
+  "keywords": [
+    "portfolio",
+    "management",
+    "investments",
+    "finance",
+    "react",
+    "nodejs"
+  ],
   "author": "",
-  "license": "ISC",
-  "description": ""
+  "license": "MIT",
+  "description": "A portfolio management app to optimize investments."
 }

@@ -7,9 +7,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
-import { supabase } from '../lib/supabase';
+import axios from 'axios';
 
 interface MarketData {
+  _id: string;
   symbol: string;
   price: number;
   timestamp: string;
@@ -17,37 +18,68 @@ interface MarketData {
 
 export default function MarketData() {
   const [loading, setLoading] = useState(true);
-  const [marketData, setMarketData] = useState<Record<string, MarketData[]>>({});
+  const [marketData, setMarketData] = useState<MarketData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchMarketData = async () => {
       try {
-        const { data, error } = await supabase
-          .from('market_data')
-          .select('*')
-          .order('timestamp', { ascending: true });
+        const response = await axios.get('http://localhost:5000/api/market-data');
 
-        if (error) throw error;
-
-        // Group data by symbol
-        const groupedData = (data || []).reduce((acc: Record<string, MarketData[]>, item) => {
-          if (!acc[item.symbol]) {
-            acc[item.symbol] = [];
-          }
-          acc[item.symbol].push(item);
-          return acc;
-        }, {});
-
-        setMarketData(groupedData);
-      } catch (error) {
-        console.error('Error fetching market data:', error);
+        if (mounted && response.data) {
+          setMarketData(response.data);
+        }
+      } catch (err) {
+        if (mounted) {
+          console.error('Error fetching market data:', err);
+          setError('Failed to fetch market data. Please try again later.');
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchMarketData();
+
+    const interval = setInterval(fetchMarketData, 30000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
+
+  const renderChart = (data: MarketData) => {
+    try {
+      const timestamp = new Date(data.timestamp).getTime();
+
+      return (
+        <LineChart
+          xAxis={[{
+            data: [timestamp],
+            valueFormatter: (value) => new Date(value).toLocaleString(),
+          }]}
+          series={[{
+            data: [data.price],
+            area: true,
+            label: data.symbol,
+          }]}
+          height={300}
+        />
+      );
+    } catch (err) {
+      console.error('Error rendering chart:', err);
+      return (
+        <Typography color="error" align="center">
+          Error displaying chart
+        </Typography>
+      );
+    }
+  };
 
   if (loading) {
     return (
@@ -57,6 +89,29 @@ export default function MarketData() {
     );
   }
 
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Typography variant="h6" color="error">
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!marketData || marketData.length === 0) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Typography variant="h6">No market data available</Typography>
+      </Box>
+    );
+  }
+
+  // Remove duplicate stocks
+  const uniqueStocks = Array.from(
+    new Map(marketData.map((item) => [item.symbol, item])).values()
+  );
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -65,27 +120,20 @@ export default function MarketData() {
         </Typography>
       </Grid>
 
-      {Object.entries(marketData).map(([symbol, data]) => (
-        <Grid item xs={12} md={6} key={symbol}>
+      {uniqueStocks.map((data) => (
+        <Grid item xs={12} md={6} key={data._id}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>
-              {symbol}
+              {data.symbol}
             </Typography>
             <Box sx={{ height: 300 }}>
-              <LineChart
-                xAxis={[{
-                  data: data.map((_, index) => index),
-                  valueFormatter: (index) => new Date(data[index].timestamp).toLocaleDateString(),
-                }]}
-                series={[{
-                  data: data.map(d => d.price),
-                  area: true,
-                }]}
-                height={300}
-              />
+              {renderChart(data)}
             </Box>
             <Typography variant="h6" color="primary" align="right">
-              Current Price: ${data[data.length - 1].price.toLocaleString()}
+              Current Price: ${data.price.toLocaleString()}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" align="right">
+              Last Updated: {new Date(data.timestamp).toLocaleString()}
             </Typography>
           </Paper>
         </Grid>
@@ -93,3 +141,4 @@ export default function MarketData() {
     </Grid>
   );
 }
+  
