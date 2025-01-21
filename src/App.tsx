@@ -38,7 +38,7 @@ function App() {
           
           {/* Protected form route */}
           <Route
-            path="/user-details"
+            path="/form"
             element={
               <AuthGuard>
                 <UserDetailsForm />
