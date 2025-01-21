@@ -22,7 +22,21 @@ export default function Login() {
     e.preventDefault();
     try {
       await signIn(email, password);
-      navigate('/');
+      
+      // Check if user has filled their profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+
+      if (profileError || !profileData) {
+        // No profile exists, redirect to form
+        navigate('/user-details');
+      } else {
+        // Profile exists, go to dashboard
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setError(err.message);
     }
