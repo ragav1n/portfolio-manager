@@ -48,7 +48,7 @@ function App() {
 
           {/* Protected dashboard routes */}
           <Route
-            path="/dashboard"
+            path="/dashboard/*"  // Added the /* to handle nested routes
             element={
               <AuthGuard>
                 <Layout />
