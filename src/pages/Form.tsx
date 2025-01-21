@@ -9,6 +9,7 @@ import {
   Alert,
 } from '@mui/material';
 import { supabase } from '../lib/supabase';
+import { useAuthStore } from '../store/authStore';
 
 interface UserProfile {
   first_name: string;
@@ -19,7 +20,8 @@ interface UserProfile {
   dob: string;
 }
 
-export default function UserDetailsForm() {
+export default function Form() {
+  const { user } = useAuthStore();
   const [formData, setFormData] = useState<UserProfile>({
     first_name: '',
     last_name: '',
@@ -29,6 +31,7 @@ export default function UserDetailsForm() {
     dob: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,12 +44,14 @@ export default function UserDetailsForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     
     try {
       const { data, error: supabaseError } = await supabase
         .from('user_profiles')
         .insert([{
-          id: user?.id, // Add this line to link profile with auth user
+          id: user?.id,
           first_name: formData.first_name,
           last_name: formData.last_name,
           email: formData.email,
@@ -58,9 +63,12 @@ export default function UserDetailsForm() {
 
       if (supabaseError) throw supabaseError;
 
-      navigate('/dashboard'); // Changed to redirect to dashboard
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message);
+      console.error('Error creating profile:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +86,7 @@ export default function UserDetailsForm() {
           Portfolio Manager
         </Typography>
         <Typography component="h2" variant="h5">
-          User Profile
+          Complete Your Profile
         </Typography>
 
         {error && (
@@ -99,6 +107,7 @@ export default function UserDetailsForm() {
             autoFocus
             value={formData.first_name}
             onChange={handleChange}
+            disabled={loading}
           />
           
           <TextField
@@ -111,6 +120,7 @@ export default function UserDetailsForm() {
             autoComplete="family-name"
             value={formData.last_name}
             onChange={handleChange}
+            disabled={loading}
           />
 
           <TextField
@@ -124,6 +134,7 @@ export default function UserDetailsForm() {
             type="email"
             value={formData.email}
             onChange={handleChange}
+            disabled={loading}
           />
 
           <TextField
@@ -137,6 +148,7 @@ export default function UserDetailsForm() {
             type="tel"
             value={formData.phone}
             onChange={handleChange}
+            disabled={loading}
           />
 
           <TextField
@@ -149,6 +161,7 @@ export default function UserDetailsForm() {
             autoComplete="street-address"
             value={formData.address}
             onChange={handleChange}
+            disabled={loading}
           />
 
           <TextField
@@ -161,6 +174,7 @@ export default function UserDetailsForm() {
             type="date"
             value={formData.dob}
             onChange={handleChange}
+            disabled={loading}
             InputLabelProps={{
               shrink: true,
             }}
@@ -171,8 +185,9 @@ export default function UserDetailsForm() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
           >
-            Submit
+            {loading ? 'Submitting...' : 'Complete Profile'}
           </Button>
         </Box>
       </Box>
