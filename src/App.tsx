@@ -5,7 +5,7 @@ import { AuthGuard } from './components/AuthGuard';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import UserDetailsForm from './pages/Form'; // Add this import
+import Form from './pages/Form';
 import Dashboard from './pages/Dashboard';
 import Portfolio from './pages/Portfolio';
 import Investments from './pages/Investments';
@@ -41,7 +41,7 @@ function App() {
             path="/form"
             element={
               <AuthGuard>
-                <UserDetailsForm />
+                <Form />
               </AuthGuard>
             }
           />
