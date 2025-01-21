@@ -44,8 +44,9 @@ export default function UserDetailsForm() {
     
     try {
       const { data, error: supabaseError } = await supabase
-        .from('user_profiles')  // Using the correct table name from your schema
+        .from('user_profiles')
         .insert([{
+          id: user?.id, // Add this line to link profile with auth user
           first_name: formData.first_name,
           last_name: formData.last_name,
           email: formData.email,
@@ -57,7 +58,7 @@ export default function UserDetailsForm() {
 
       if (supabaseError) throw supabaseError;
 
-      navigate('/'); // Or wherever you want to redirect after success
+      navigate('/dashboard'); // Changed to redirect to dashboard
     } catch (err: any) {
       setError(err.message);
     }
