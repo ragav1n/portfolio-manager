@@ -2,8 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthGuard } from './components/AuthGuard';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Form from './pages/Form';
 import Dashboard from './pages/Dashboard';
 import Portfolio from './pages/Portfolio';
 import Investments from './pages/Investments';
@@ -29,10 +31,24 @@ function App() {
       <CssBaseline />
       <Router>
         <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* Protected form route */}
           <Route
-            path="/"
+            path="/form"
+            element={
+              <AuthGuard>
+                <Form />
+              </AuthGuard>
+            }
+          />
+
+          {/* Protected dashboard routes */}
+          <Route
+            path="/dashboard/*"  // Added the /* to handle nested routes
             element={
               <AuthGuard>
                 <Layout />

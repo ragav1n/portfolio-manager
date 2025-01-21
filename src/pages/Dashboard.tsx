@@ -164,7 +164,10 @@ export default function Dashboard() {
         <Typography variant="h6" gutterBottom>
           No portfolio data available
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => navigate("/investments")}>
+        <Button variant="contained" color="primary"  onClick={() => {
+          console.log("Navigating to: /dashboard/investments");
+          navigate("/dashboard/investments");
+        }}>
           Add Your First Investment
         </Button>
       </Box>

@@ -35,10 +35,10 @@ export default function Layout() {
 
   const menuItems = [
     { text: 'Dashboard', icon: <Home />, path: '/' },
-    { text: 'Portfolio', icon: <PieChart />, path: '/portfolio' },
-    { text: 'Investments', icon: <TrendingUp />, path: '/investments' },
-    { text: 'Market Data', icon: <BarChart2 />, path: '/market-data' },
-    { text: 'Suggestions', icon: <Lightbulb />, path: '/suggestions' },
+    { text: 'Portfolio', icon: <PieChart />, path: '/dashboard/portfolio' },
+    { text: 'Investments', icon: <TrendingUp />, path: '/dashboard/investments' },
+    { text: 'Market Data', icon: <BarChart2 />, path: '/dashboard/market-data' },
+    { text: 'Suggestions', icon: <Lightbulb />, path: '/dashboard/suggestions' },
   ];
 
   const handleDrawerToggle = () => {

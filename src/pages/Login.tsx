@@ -10,19 +10,35 @@ import {
   Alert,
 } from '@mui/material';
 import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabase';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { signIn } = useAuthStore();
+  const { signIn, user} = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signIn(email, password);
-      navigate('/');
+      
+      // Check if user has filled their profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+
+      if (profileError || !profileData) {
+        // No profile exists, redirect to form
+        navigate('/form');
+      } else {
+        // Profile exists, go to dashboard
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setError(err.message);
     }
