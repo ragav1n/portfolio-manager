@@ -108,6 +108,19 @@ export default function Home() {
 
             {error && <Typography color="error">{error}</Typography>}
 
+             <Button
+              fullWidth
+              variant="outlined"
+              size="large"
+              onClick={handleSignIn}
+              sx={{
+                py: 1.5,
+                fontSize: '1.1rem',
+              }}
+            >
+              Sign In
+            </Button>
+            <p>OR</p>
             <Button
               fullWidth
               variant="contained"
@@ -121,18 +134,7 @@ export default function Home() {
               Create Account
             </Button>
 
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              onClick={handleSignIn}
-              sx={{
-                py: 1.5,
-                fontSize: '1.1rem',
-              }}
-            >
-              Sign In
-            </Button>
+           
           </Box>
         </Paper>
 
