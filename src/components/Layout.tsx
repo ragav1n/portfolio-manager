@@ -34,7 +34,7 @@ export default function Layout() {
   const { signOut } = useAuthStore();
 
   const menuItems = [
-    { text: 'Dashboard', icon: <Home />, path: '/' },
+    { text: 'Dashboard', icon: <Home />, path: '/dashboard' },
     { text: 'Portfolio', icon: <PieChart />, path: '/dashboard/portfolio' },
     { text: 'Investments', icon: <TrendingUp />, path: '/dashboard/investments' },
     { text: 'Market Data', icon: <BarChart2 />, path: '/dashboard/market-data' },
