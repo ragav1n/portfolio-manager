@@ -1,29 +1,37 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { CircularProgress } from '@mui/material';
+import { supabase } from '../lib/supabase';
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuthStore();
+interface AuthGuardProps {
+  children: ReactNode;
+}
+
+export function AuthGuard({ children }: AuthGuardProps) {
+  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
-    }
-  }, [user, loading, navigate]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <CircularProgress />
-      </div>
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT') {
+          navigate('/login');
+        }
+      }
     );
-  }
 
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  // If there's no user, redirect to login
   if (!user) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
+  // If there is a user, render the protected content
   return <>{children}</>;
 }
