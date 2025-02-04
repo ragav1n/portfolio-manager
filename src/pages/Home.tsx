@@ -120,7 +120,9 @@ export default function Home() {
             >
               Sign In
             </Button>
+            <div class="flex items-center">
             <p>OR</p>
+            </div>
             <Button
               fullWidth
               variant="contained"
