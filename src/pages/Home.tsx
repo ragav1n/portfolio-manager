@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Box, Typography, Button, Paper, TextField } from '@mui/material';
-import { supabase } from '../lib/supabase'; // Make sure this import path is correct
+import { Container, Box, Typography, Button, Paper, TextField, Divider } from '@mui/material';
+import { supabase } from '../lib/supabase'; // Ensure correct import path
 
 export default function Home() {
   const navigate = useNavigate();
@@ -108,7 +108,8 @@ export default function Home() {
 
             {error && <Typography color="error">{error}</Typography>}
 
-             <Button
+            {/* Sign In Button */}
+            <Button
               fullWidth
               variant="outlined"
               size="large"
@@ -120,9 +121,17 @@ export default function Home() {
             >
               Sign In
             </Button>
-            <div class="flex items-center">
-            <p>OR</p>
-            </div>
+
+            {/* Centered OR Divider */}
+            <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
+              <Divider sx={{ flex: 1 }} />
+              <Typography sx={{ mx: 2, fontSize: '1rem', fontWeight: 'bold', color: 'gray' }}>
+                OR
+              </Typography>
+              <Divider sx={{ flex: 1 }} />
+            </Box>
+
+            {/* Create Account Button */}
             <Button
               fullWidth
               variant="contained"
@@ -135,8 +144,6 @@ export default function Home() {
             >
               Create Account
             </Button>
-
-           
           </Box>
         </Paper>
 

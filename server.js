@@ -31,6 +31,9 @@ async function connectToMongoDB() {
     db = client.db('Portfolio_Management'); // Explicitly specify the database name
     console.log('Connected to MongoDB');
     
+    // Create an index on the timestamp field for faster querying and sorting
+    await db.collection('realtime_prices').createIndex({ timestamp: -1 });
+
     // Test the connection by accessing the collection
     const collection = db.collection('realtime_prices');
     const testDoc = await collection.findOne({});
@@ -69,7 +72,7 @@ app.get('/api/market-data', ensureDBConnection, async (req, res) => {
     const collection = db.collection('realtime_prices');
     const data = await collection
       .find({})
-      .sort({ timestamp: -1 })
+      .sort({ timestamp: -1 }) // Sort by the latest timestamp
       .limit(10)
       .toArray();
 
@@ -91,6 +94,31 @@ app.get('/api/market-data', ensureDBConnection, async (req, res) => {
     res.json(transformedData);
   } catch (error) {
     console.error('Error fetching market data:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// API to insert new market data (for testing purposes)
+app.post('/api/market-data', ensureDBConnection, async (req, res) => {
+  try {
+    const { ticker, price } = req.body;
+    if (!ticker || !price) {
+      return res.status(400).json({ error: 'Ticker and price are required' });
+    }
+
+    const timestamp = new Date().toISOString();
+    const newData = { ticker, price, timestamp };
+
+    // Insert the new data into the collection
+    const result = await db.collection('realtime_prices').insertOne(newData);
+    console.log('Inserted new stock data:', newData);
+
+    res.status(201).json({
+      message: 'New market data inserted successfully',
+      data: result.ops[0],
+    });
+  } catch (error) {
+    console.error('Error inserting market data:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

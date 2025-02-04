@@ -12,35 +12,44 @@ import {
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { signIn, user} = useAuthStore();
+  const { signIn } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+
     try {
-      await signIn(email, password);
-      
-      // Check if user has filled their profile
+      const { data, error } = await signIn(email, password);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data || !data.user) {
+        throw new Error("Authentication failed.");
+      }
+
+      const userId = data.user.id;
+
+      // Check if user has a profile
       const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', userId)
         .single();
 
       if (profileError || !profileData) {
-        // No profile exists, redirect to form
-        navigate('/form');
+        navigate('/form'); // Redirect to profile form if profile is missing
       } else {
-        // Profile exists, go to dashboard
-        navigate('/dashboard');
+        navigate('/dashboard'); // Redirect to dashboard if profile exists
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Something went wrong. Please try again.");
     }
   };
 
@@ -95,9 +104,6 @@ export default function Login() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={() => {
-          
-          navigate("/dashboard");}}
           >
             Sign In
           </Button>
