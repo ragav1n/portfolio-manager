@@ -29,7 +29,7 @@ export default function Register() {
     try {
       const { data: authData, error: authError } = await signUp(email, password);
       if (authError) throw authError;
-
+      
       if (authData.user) {
         // Create initial portfolio for the user
         const { error: portfolioError } = await supabase
@@ -40,11 +40,11 @@ export default function Register() {
               total_investments: 0
             }
           ]);
-
         if (portfolioError) throw portfolioError;
+        
+        // Navigate to form instead of login
+        navigate('/form');
       }
-
-      navigate('/login');
     } catch (err: any) {
       setError(err.message);
     }
