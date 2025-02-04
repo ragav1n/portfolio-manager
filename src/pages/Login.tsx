@@ -12,24 +12,23 @@ import {
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { signIn, user} = useAuthStore();
+  const { signIn } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signIn(email, password);
+      const { user } = await signIn(email, password);
       
       // Check if user has filled their profile
       const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', user.id)
         .single();
 
       if (profileError || !profileData) {
@@ -95,9 +94,6 @@ export default function Login() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={() => {
-          
-          navigate("/dashboard");}}
           >
             Sign In
           </Button>
