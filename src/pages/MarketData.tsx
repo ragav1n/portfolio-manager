@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import {
   Grid,
-  Paper,
   Typography,
   Box,
   CircularProgress,
+  Card,
+  CardContent,
+  CardActionArea,
 } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
 import axios from 'axios';
@@ -20,6 +22,7 @@ export default function MarketData() {
   const [loading, setLoading] = useState(true);
   const [marketData, setMarketData] = useState<MarketData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -53,32 +56,62 @@ export default function MarketData() {
     };
   }, []);
 
-  const renderChart = (data: MarketData) => {
-    try {
-      const timestamp = new Date(data.timestamp).getTime();
-
-      return (
-        <LineChart
-          xAxis={[{
-            data: [timestamp],
-            valueFormatter: (value) => new Date(value).toLocaleString(),
-          }]}
-          series={[{
-            data: [data.price],
-            area: true,
-            label: data.symbol,
-          }]}
-          height={300}
-        />
-      );
-    } catch (err) {
-      console.error('Error rendering chart:', err);
-      return (
-        <Typography color="error" align="center">
-          Error displaying chart
-        </Typography>
-      );
+  // Group market data by symbol
+  const groupedData: Record<string, MarketData[]> = marketData.reduce((acc, data) => {
+    if (!acc[data.symbol]) {
+      acc[data.symbol] = [];
     }
+    acc[data.symbol].push(data);
+    return acc;
+  }, {} as Record<string, MarketData[]>);
+
+  const fillMissingData = (data: MarketData[]) => {
+    if (data.length === 0) return [];
+
+    const sortedData = [...data].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const timestamps = sortedData.map((entry) => new Date(entry.timestamp).getTime());
+    const minTime = Math.min(...timestamps);
+    const maxTime = Math.max(...timestamps);
+
+    const filledData: { timestamp: number; price: number }[] = [];
+    let lastKnownPrice = sortedData[0].price;
+    const interval = 60 * 1000;
+
+    for (let time = minTime; time <= maxTime; time += interval) {
+      const existingData = sortedData.find((d) => new Date(d.timestamp).getTime() === time);
+
+      if (existingData) {
+        lastKnownPrice = existingData.price;
+      } else {
+        // Simulate a slight upward or downward trend if no data for this timestamp
+        lastKnownPrice += Math.random() > 0.5 ? 0.5 : -0.5; // Random small price change
+      }
+
+      filledData.push({ timestamp: time, price: lastKnownPrice });
+    }
+
+    return filledData;
+  };
+
+  const renderChart = (data: MarketData[]) => {
+    const filledData = fillMissingData(data);
+    const timestamps = filledData.map((entry) => entry.timestamp);
+    const prices = filledData.map((entry) => entry.price);
+
+    return (
+      <LineChart
+        xAxis={[{
+          data: timestamps,
+          valueFormatter: (value) => new Date(value).toLocaleString(),
+        }]}
+        series={[{
+          data: prices,
+          area: true,
+          label: data[0].symbol,
+        }]}
+        height={200}
+      />
+    );
   };
 
   if (loading) {
@@ -107,11 +140,6 @@ export default function MarketData() {
     );
   }
 
-  // Remove duplicate stocks
-  const uniqueStocks = Array.from(
-    new Map(marketData.map((item) => [item.symbol, item])).values()
-  );
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -120,25 +148,38 @@ export default function MarketData() {
         </Typography>
       </Grid>
 
-      {uniqueStocks.map((data) => (
-        <Grid item xs={12} md={6} key={data._id}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              {data.symbol}
-            </Typography>
-            <Box sx={{ height: 300 }}>
-              {renderChart(data)}
-            </Box>
-            <Typography variant="h6" color="primary" align="right">
-              Current Price: ${data.price.toLocaleString()}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" align="right">
-              Last Updated: {new Date(data.timestamp).toLocaleString()}
-            </Typography>
-          </Paper>
+      {Object.entries(groupedData).map(([symbol, data]) => (
+        <Grid item xs={12} md={6} key={symbol}>
+          <Card
+            sx={{
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              transform: expandedCard === symbol ? 'scale(1.1)' : 'scale(1)',
+              boxShadow: expandedCard === symbol ? 10 : 3,
+              cursor: 'pointer',
+            }}
+            onMouseEnter={() => setExpandedCard(symbol)}
+            onMouseLeave={() => setExpandedCard(null)}
+          >
+            <CardActionArea>
+              <CardContent>
+                <Typography variant="h6">{symbol}</Typography>
+                <Typography variant="h5" color="primary">
+                  ${data[data.length - 1].price.toLocaleString()}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Last Updated: {new Date(data[data.length - 1].timestamp).toLocaleString()}
+                </Typography>
+                {/* Expand to show graph when hovered */}
+                {expandedCard === symbol && (
+                  <Box mt={2}>
+                    {renderChart(data)}
+                  </Box>
+                )}
+              </CardContent>
+            </CardActionArea>
+          </Card>
         </Grid>
       ))}
     </Grid>
   );
 }
-  

@@ -100,7 +100,7 @@ export default function Dashboard() {
 
         // Determine risk level based on investment composition
         const riskScores = { Low: 1, Medium: 2, High: 3 }
-        const avgRisk = investments.reduce((sum, inv) => sum + riskScores[inv.risk], 0) / investments.length
+        const avgRisk = investments.reduce((sum, inv: { risk: "Low" | "Medium" | "High" }) => sum + riskScores[inv.risk], 0) / investments.length
         const riskLevel = avgRisk <= 1.5 ? "Low" : avgRisk <= 2.5 ? "Medium" : "High"
 
         console.log("Portfolios:", portfolios)
