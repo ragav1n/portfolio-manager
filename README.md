@@ -1,67 +1,78 @@
-# Portfolio-manager
+# Investment Portfolio Management System
 
-## Overview
-
-Portfolio Manager is a web application designed to help users manage their investment portfolios effectively. It provides tools for asset allocation, performance tracking, and risk analysis, allowing investors to make informed decisions about their financial future.
+A comprehensive Investment Portfolio Management System that integrates MySQL for structured data analysis and AI for predictive risk assessment. This system provides personalized portfolio insights, real-time monitoring, and a scalable relational database for secure financial data handling.
 
 ## Features
+- **User Authentication**: Secure login & registration
+- **Portfolio Management**: Track stocks, mutual funds, and assets
+- **Real-Time Monitoring**: Fetch and update market data
+- **Predictive Analytics**: AI-driven risk assessment and performance prediction
+- **Data Visualization**: Interactive charts for insights
 
-- User authentication (login and registration)
-- Dashboard for portfolio overview
-- Asset allocation visualization
-- Real-time performance tracking
-- Risk analysis tools
-- Investment suggestions based on user profile
+## Tech Stack
+- **Backend**: Python (Flask/Django)
+- **Frontend**: React.js / Flutter (if mobile app is included)
+- **Database**: MySQL
+- **AI/ML**: TensorFlow/PyTorch for predictive analysis
+- **APIs**: Alpha Vantage, Yahoo Finance
 
-## Technologies Used
+## Installation & Setup
 
-- React
-- Typescript
-- Next.js 13+ (App Router)
-- Tailwind CSS
-- shadcn/ui components
-- Lucide React icons
-- CSS Variables
-- MongoDB
+### Prerequisites
+- Python 3.8+
+- MySQL Server
+- Node.js (if using React for frontend)
+- Virtual Environment (Optional but recommended)
 
-## Prerequisites
+### Clone the Repository
+```bash
+git clone https://github.com/your-username/investment-portfolio-management.git
+cd investment-portfolio-management
+```
 
-Before you begin, ensure you have the following installed:
-- Node.js (v14 or later)
-- npm (v6 or later)
+### Backend Setup
+1. Create a virtual environment (optional but recommended)
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+3. Configure `.env` file with MySQL credentials
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=portfolio_db
+```
+4. Initialize Database
+```bash
+python setup_db.py
+```
+5. Run the Backend Server
+```bash
+python app.py
+```
 
-## Installation Instructions
+### Frontend Setup (React)
+```bash
+cd frontend
+npm install
+npm start
+```
 
-1. **Clone the repository:**
-    ```bash
-    git clone https://github.com/yourusername/investments-Management.git
-    ```
+## API Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/login` | POST | User authentication |
+| `/api/portfolio` | GET | Fetch portfolio data |
+| `/api/market-data` | GET | Retrieve market insights |
+| `/api/predict` | POST | AI-based predictions |
 
-2. **Navigate to the project directory:**
-    ```bash
-    cd investments-Management
-    ```
+## Contributing
+Feel free to fork this repository and submit pull requests. Make sure to follow best practices and add meaningful commits.
 
-3. **Install the dependencies:**
-    ```bash
-    npm install
-    ```
-
-4. **Set up environment variables:**
-    - Create a `.env.local` file in the root directory.
-    - Add necessary environment variables. Example:
-    ```plaintext
-    NEXT_PUBLIC_API_URL=https://api.example.com
-    ```
-
-5. **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-
-6. **View the application:**
-    - Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## License
-
-- This project is licensed under the MIT License.
+---
+**Maintainer:** Prajwal M ([prajwal26sunil@gmail.com](mailto:prajwal26sunil@gmail.com))
