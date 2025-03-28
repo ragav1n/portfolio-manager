@@ -2,7 +2,7 @@
 
 ## Overview
 
-Portfolio Managemenr is a web application designed to help users manage their investment portfolios effectively. It provides tools for asset allocation, performance tracking, and risk analysis, allowing investors to make informed decisions about their financial future.
+Portfolio Manager is a web application designed to help users manage their investment portfolios effectively. It provides tools for asset allocation, performance tracking, and risk analysis, allowing investors to make informed decisions about their financial future.
 
 ## Features
 
